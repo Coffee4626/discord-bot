@@ -30,7 +30,6 @@ module.exports = {
                 userId: interaction.user.id,
                 userTag: interaction.user.tag,
                 message: feedbackText,
-                // Add guild info if submitted from a server
                 guildId: interaction.guildId || null,
                 guildName: interaction.guild?.name || null
             });

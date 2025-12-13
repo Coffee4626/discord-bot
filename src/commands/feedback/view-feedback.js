@@ -19,7 +19,7 @@ const data = new SlashCommandBuilder()
             .setName('filter')
             .setDescription('Filter feedback by source')
             .addChoices(
-                { name: 'All (Server + DMs)', value: 'all' },
+                { name: 'Server + DMs', value: 'all' },
                 { name: 'Server Only', value: 'server' },
                 { name: 'DMs Only', value: 'dm' }
             )
@@ -58,14 +58,21 @@ module.exports = {
             const count = interaction.options.getInteger('count') || 10;
             const filter = interaction.options.getString('filter') || 'all';
 
-            // Build query based on filter
+            // FIXED: Build query to only show THIS server's feedback + DMs
             let query = {};
             if (filter === 'server') {
+                // Only this server's feedback
                 query.guildId = interaction.guildId;
             } else if (filter === 'dm') {
+                // Only DM feedback
                 query.guildId = null;
+            } else {
+                // 'all' = This server + DMs (not other servers)
+                query.$or = [
+                    { guildId: interaction.guildId },
+                    { guildId: null }
+                ];
             }
-            // If 'all', query remains empty and fetches everything
 
             // Fetch recent feedbacks from MongoDB
             const feedbacks = await Feedback.find(query)
@@ -83,13 +90,14 @@ module.exports = {
             for (const feedback of feedbacks) {
                 const embed = new EmbedBuilder()
                     .setColor('#0099ff')
-                    .setTitle('Feedback')
+                    .setTitle('📋 Feedback')
                     .setDescription(feedback.message)
                     .addFields(
                         { name: 'User', value: `${feedback.userTag} (${feedback.userId})`, inline: true },
                         { name: 'Source', value: feedback.guildName || 'DM', inline: true }
                     )
-                    .setTimestamp(feedback.createdAt);
+                    .setTimestamp(feedback.createdAt)
+                    .setFooter({ text: 'ID: ' + feedback._id });
 
                 await feedbackChannel.send({ embeds: [embed] });
             }
