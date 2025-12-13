@@ -1,5 +1,5 @@
 const { MessageFlags } = require('discord.js');
-const feedbackModal = require('../../models/Feedback.js');
+const feedbackModal = require('../../models/Feedback-modal.js');
 const WelcomeChannel = require('../../models/WelcomeChannel.js')
 
 module.exports = {

@@ -13,6 +13,8 @@ const client = new Client({
   ],
 });
 
+global.discordClient = client;
+
 connectDB();
 
 loadCommands(client);

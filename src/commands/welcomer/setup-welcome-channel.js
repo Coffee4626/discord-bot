@@ -39,7 +39,7 @@ module.exports = {
             const exists = await WelcomeChannel.exists(query);
 
             if (exists) {
-                interaction.followUp('A channel has already been configured to send welcome messages');
+                interaction.followUp('This channel has already been configured to send welcome messages');
                 return;
             }
 
